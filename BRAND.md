@@ -140,7 +140,8 @@ comando em ouro velho e saída em tinta. Uma janela por peça, flutuando sobre a
   (`SKILL.md`, `readme-designer`).
 - Descrição de skill em uma frase: o que ela entrega, sem adjetivo.
 - Sem trocadilho de forja ou mitologia no texto. O tema está na imagem; a copy fica sóbria.
-- O `alt` do card e o `<title>` do SVG têm o texto inteiro. Com `--profile`, o script gera o
+- O `alt` do card e o `<title>` do SVG têm o texto inteiro, sem URL nem `<>` (o GitHub corta o
+  atributo e o resto vaza como texto). Em folha longa, um resumo fiel no lugar do texto inteiro. Com `--profile`, o script gera o
   `profile/README.md` do repo `.github` com o `alt` copiado do `<title>`, então os dois nunca divergem.
 
 ## 9. Faça e não faça
