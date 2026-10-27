@@ -177,10 +177,15 @@ def rays(cx: float, cy: float, r0: float, r1: tuple[float, float], n: int, seed:
             f'stroke-linecap="round" fill="none"/>')
 
 
-def dither(w: int, h: int, px: int = 2) -> str:
-    """Estátua em ouro: dithering de 4 tons (transparente, brasa, ouro, bronze) sobre o recorte."""
+def dither(w: int, h: int, px: int = 2, box: tuple[float, float, float, float] | None = None) -> str:
+    """Estátua em ouro: dithering de 4 tons (transparente, brasa, ouro, bronze) sobre o recorte.
+    `box` (x0, y0, x1, y1, relativo à figura) corta um trecho antes, como o busto do avatar."""
     gw, gh = w // px, h // px
-    src = Image.open(ART).convert("LA").resize((gw, gh), Image.Resampling.LANCZOS)
+    src = Image.open(ART).convert("LA")
+    if box:
+        sw, sh = src.size
+        src = src.crop((round(box[0] * sw), round(box[1] * sh), round(box[2] * sw), round(box[3] * sh)))
+    src = src.resize((gw, gh), Image.Resampling.LANCZOS)
     g, a = src.split()
     g = ImageOps.autocontrast(g, cutoff=1).point(lambda v: int(40 + v * 0.86))
     pal_cols = [T.card, X["brasa"], X["ouro"], X["bronze"]]
@@ -363,6 +368,64 @@ def tokens_card(f: dict[str, Font]) -> str:
                "".join(d) + f"<defs>{G.defs()}</defs>")
 
 
+# ----------------------------------------------------------------------------- avatar da organização
+# Busto de Hefesto com o sol da forja, 500 x 500, sem texto: no GitHub ele aparece com 20 a 40 px
+# e o nome já vem escrito ao lado. Estático (PNG não anima), então sem fagulhas. O PNG se sobe à mão em
+# github.com/organizations/mandasTeam/settings/profile: a API não troca avatar de organização.
+AV = 500                         # lado do avatar
+AV_INSET = 18                    # filete de ouro (a marca da chapa), na escala do avatar
+AV_BOX = (0.08, 0.0, 1.0, 0.36)  # busto: cabeça e peito, sem corte reto dentro da chapa
+AV_K = 0.83                      # escala da gravura: o rosto precisa ler com 40 px
+AV_HEAD = (250, 206)             # onde a cabeça fica no avatar
+AV_HALO = 118                    # raio da auréola
+
+
+def silhouette(w: int, h: int) -> str:
+    """Recorte do busto chapado em mármore. No dithering o tom mais claro é transparente, então
+    sem esta base os raios apareceriam através das luzes do corpo."""
+    a = Image.open(ART).convert("LA")
+    sw, sh = a.size
+    a = a.crop((round(AV_BOX[0] * sw), round(AV_BOX[1] * sh), round(AV_BOX[2] * sw), round(AV_BOX[3] * sh)))
+    a = a.split()[1].resize((w, h), Image.Resampling.LANCZOS).point(lambda v: 255 if v >= 128 else 0)
+    img = Image.new("RGBA", (w, h), T.card)
+    img.putalpha(a)
+    buf = io.BytesIO()
+    img.save(buf, "PNG", optimize=True)
+    return "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode()
+
+
+def avatar() -> str:
+    aw, ah = Image.open(ART).size
+    k = AV_K                                          # px do avatar por px da gravura
+    fw, fh = round((AV_BOX[2] - AV_BOX[0]) * aw * k), round((AV_BOX[3] - AV_BOX[1]) * ah * k)
+    hx, hy = AV_HEAD
+    fx = hx - (HEAD[0] - AV_BOX[0]) * aw * k
+    fy = hy - (HEAD[1] - AV_BOX[1]) * ah * k
+
+    inner = AV - 2 * AV_INSET
+    defs = (DEFS_GRAIN
+            + f'<radialGradient id="fade" cx="{num(hx)}" cy="{num(hy)}" r="330" gradientUnits="userSpaceOnUse">'
+              '<stop offset=".3" stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>'
+            + f'<mask id="m"><rect width="{AV}" height="{AV}" fill="url(#fade)"/></mask>'
+            + f'<clipPath id="in"><rect x="{AV_INSET}" y="{AV_INSET}" width="{inner}" height="{inner}"/></clipPath>')
+    d = [f"<defs>{defs}</defs>",
+         f'<rect width="{AV}" height="{AV}" fill="{T.card}"/>',
+         f'<rect width="{AV}" height="{AV}" filter="url(#grain)"/>',
+         f'<g clip-path="url(#in)">',
+         # sol da forja
+         f'<g mask="url(#m)">{rays(hx, hy, AV_HALO + 10, (80, 300), 150, 7, width=1.5)}</g>',
+         f'<circle cx="{num(hx)}" cy="{num(hy)}" r="{AV_HALO}" fill="none" stroke="{X["ouro"]}" stroke-width="2"/>',
+         f'<circle cx="{num(hx)}" cy="{num(hy)}" r="{AV_HALO + 10}" fill="none" stroke="{X["ouro"]}" stroke-width="1.2" stroke-dasharray="2 6"/>',
+         # busto em ouro, cortado pela chapa; a silhueta em mármore embaixo tapa os raios nas luzes
+         f'<image x="{num(fx)}" y="{num(fy)}" width="{fw}" height="{fh}" href="{silhouette(fw, fh)}"/>',
+         f'<image x="{num(fx)}" y="{num(fy)}" width="{fw}" height="{fh}" href="{dither(fw, fh, px=2, box=AV_BOX)}" '
+         f'image-rendering="optimizeSpeed" style="image-rendering:pixelated"/>',
+         "</g>",
+         f'<rect x="{AV_INSET}" y="{AV_INSET}" width="{inner}" height="{inner}" fill="none" stroke="{X["ouro"]}" stroke-width="1.5"/>']
+    return svg(AV, AV, "mandasTeam: busto de Hefesto em dithering dourado sobre mármore, com auréola e raios.",
+               "".join(d))
+
+
 PROFILE_IMG = "https://github.com/mandasTeam/team-docs/raw/main/assets/mandasteam.svg"
 
 
@@ -376,10 +439,14 @@ def main() -> None:
     out.mkdir(exist_ok=True)
     for old in out.glob("*.svg"):
         old.unlink()
-    files = {"mandasteam.svg": folio(c, f), "brand-tokens.svg": tokens_card(f)}
+    files = {"mandasteam.svg": folio(c, f), "brand-tokens.svg": tokens_card(f), "avatar.svg": avatar()}
     for name, content in files.items():
         (out / name).write_text(content, encoding="utf-8")
         print(f"{name}: {len(content) / 1024:.0f} KB")
+    import resvg_py  # só para o PNG do avatar
+    png = bytes(resvg_py.svg_to_bytes(svg_string=files["avatar.svg"], width=AV, height=AV))
+    (out / "avatar.png").write_bytes(png)
+    print(f"avatar.png: {len(png) / 1024:.0f} KB")
     if args.profile:
         # o perfil é um card só, servido daqui; o alt repete o <title> do SVG, palavra por palavra
         alt = files["mandasteam.svg"].split('<title id="t">', 1)[1].split("</title>", 1)[0].replace('"', "&quot;")

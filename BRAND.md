@@ -115,6 +115,19 @@ comando em ouro velho e saída em tinta. Uma janela por peça, flutuando sobre a
   Foto, ilustração moderna, 3D ou arte gerada ficam de fora.
 - Uma figura por peça.
 
+### Avatar da organização
+
+<img src="assets/avatar.png" width="160" align="right" alt="Avatar do mandasTeam: busto de Hefesto em dithering dourado sobre mármore, com auréola e raios.">
+
+- `assets/avatar.png`, 500 × 500, gerado junto com o resto (`avatar()` no `build_assets.py`).
+- Busto (cabeça e peito) com o sol da forja: auréola dupla e raios saindo da cabeça, dentro da placa
+  com filete de ouro. O busto sangra pela base da chapa.
+- Sem texto: no GitHub o avatar aparece com 20 a 40 px e o nome já vem escrito ao lado.
+- Ponto do dithering de 2 px, não 1: com 1 px o rosto vira borrão quando o GitHub reduz a imagem.
+- Estático. PNG não anima, então não há fagulhas.
+- A API não troca avatar de organização: suba o PNG em
+  `github.com/organizations/mandasTeam/settings/profile` → **Profile picture** → **Upload a photo**.
+
 ## 7. Movimento
 
 - Um gesto só: as fagulhas do martelo piscam em tempos diferentes (ciclo de 2,6 s).
@@ -146,7 +159,7 @@ comando em ouro velho e saída em tinta. Uma janela por peça, flutuando sobre a
 
 ```bash
 python -m pip install -r tools/requirements.txt
-python tools/build_assets.py                                   # escreve assets/*.svg
+python tools/build_assets.py                                   # escreve assets/*.svg e avatar.png
 python tools/build_assets.py --profile ../mandasTeam-.github   # e o profile/README.md do repo .github
 ```
 
