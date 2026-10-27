@@ -182,6 +182,12 @@ plinto, janela), com o fluxo da skill em lâminas `Pl. I`–`Pl. VI`, instalaç�
 a árvore de arquivos numa prancha. O README é só a folha: nada de `<details>`, selo ou rodapé em
 markdown embaixo dela. O `alt` sai do `<title>` com `--readme`.
 
+O README de [`product-owner`](https://github.com/mandasTeam/product-owner) segue o mesmo molde
+(`tools/build_banner.py` de lá, com fontes, figura e `svgkit` copiados para o CI gerar sozinho).
+Variações que já valem como padrão: procedimento longo em lâminas de quatro por linha
+(`Pl. I`–`Pl. VIII`), modos da skill em pranchas lado a lado com um quarto de fagulha no canto, e
+o que a skill entrega em linhas com régua veio (caminho em mono 600 à esquerda, conteúdo à direita).
+
 ### Checklist antes de publicar
 
 - [ ] Build sem `MissingGlyph` e todo SVG abaixo de 250 KB.
