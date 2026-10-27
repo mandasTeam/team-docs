@@ -178,8 +178,8 @@ Para um repo de skill novo, copie `tools/` deste repo e reaproveite `plate()`, `
 Exemplo pronto: o README de [`readme-designer`](https://github.com/mandasTeam/readme-designer)
 (`tools/build_banner.py` de lá). É uma folha única no mesmo herói (nome em duas linhas, Hefesto no
 plinto, janela), com o fluxo da skill em lâminas `Pl. I`–`Pl. VI`, instalação em caixas de tinta e
-a árvore de arquivos numa prancha. Texto em path não se copia, então os comandos e os links ficam
-em `<details>` logo abaixo da folha, e o `alt` sai do `<title>` com `--readme`.
+a árvore de arquivos numa prancha. O README é só a folha: nada de `<details>`, selo ou rodapé em
+markdown embaixo dela. O `alt` sai do `<title>` com `--readme`.
 
 ### Checklist antes de publicar
 
