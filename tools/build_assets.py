@@ -67,6 +67,8 @@ CONFIG = {
          "README de perfil e de projeto no GitHub com design próprio em SVG, fatos conferidos e poucos tokens."),
         ("II", "product-owner",
          "Do escopo ao backlog no GitHub, com requisitos rastreáveis, decisões registradas e nada que nenhum requisito peça."),
+        ("III", "skill-author",
+         "Cria e revisa skills de agente: fluxo tirado da tarefa, gatilho certo e melhora medida contra o agente sem a skill."),
     ],
     "usage": ["clone o repo da skill",
               "copie skills/<nome>/ para as skills do agente",
@@ -260,8 +262,10 @@ def skill_plate(x: float, y: float, w: float, h: float, numeral: str, name: str,
 def folio(c: dict, f: dict[str, Font]) -> str:
     global G
     G = Glyphs()
-    h = 1400
     x0 = 72
+    sy = 968                                           # título do catálogo
+    rows = (len(c["skills"]) + 1) // 2
+    h = round(sy + 40 + rows * 330 + (rows - 1) * 24 + 62)
     # figura
     fh = 700
     fw = fh * Image.open(ART).width / Image.open(ART).height
@@ -318,12 +322,12 @@ def folio(c: dict, f: dict[str, Font]) -> str:
     # janela flutuante sobre a estátua
     d += terminal(776, 604, 366, f, c["terminal"])
 
-    # catálogo
-    sy = 968
+    # catálogo: duas pranchas por linha
     d += section_title("Skills", x0, sy, W - x0, f)
     pw2 = (W - 2 * x0 - 24) / 2
     for i, (numeral, name, desc) in enumerate(c["skills"]):
-        d += skill_plate(x0 + i * (pw2 + 24), sy + 40, pw2, 330, numeral, name, desc, f, 11 + i)
+        d += skill_plate(x0 + (i % 2) * (pw2 + 24), sy + 40 + (i // 2) * (330 + 24), pw2, 330,
+                         numeral, name, desc, f, 11 + i)
 
     style = ("@keyframes tw{0%,100%{opacity:0}45%{opacity:1}}"
              ".sp{opacity:0;animation:tw 2.6s ease-in-out infinite}" + REDUCED_MOTION + "@media (prefers-reduced-motion:reduce){.sp{opacity:.8}}")

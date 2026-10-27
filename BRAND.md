@@ -1,7 +1,7 @@
 # Direção de arte do mandasTeam
 
 <p align="center">
-  <img src="assets/mandasteam.svg" width="100%" alt="Perfil do mandasTeam: estátua de Hefesto em dithering dourado sobre mármore, com o título mandasTeam, a apresentação, como usar e as pranchas das skills readme-designer e product-owner.">
+  <img src="assets/mandasteam.svg" width="100%" alt="Perfil do mandasTeam: estátua de Hefesto em dithering dourado sobre mármore, com o título mandasTeam, a apresentação, como usar e as pranchas das skills readme-designer, product-owner e skill-author.">
 </p>
 
 Este documento define a identidade visual do mandasTeam: o perfil da organização, os banners
@@ -64,14 +64,15 @@ Hermes (Rules Gothic Compressed e Aeonik Fono), que são proprietárias.
 
 ## 4. Composição: um card só
 
-O perfil é **uma folha única** de 1200 × 1400 px, sem `##` nem imagem solta no markdown.
+O perfil é **uma folha única** de 1200 px de largura (a altura cresce com o número de skills),
+sem `##` nem imagem solta no markdown.
 A ordem, de cima para baixo:
 
 1. **Cabeçalho:** `mandasTeam / oficina de skills` à esquerda, `github.com/mandasTeam` à direita,
    filete de ouro embaixo.
 2. **Herói:** o nome gigante à esquerda; à direita, Hefesto sobre o plinto, com a auréola e os
    raios saindo da cabeça. Abaixo do nome: a linha principal, a apresentação e o "como usar".
-3. **Skills:** título com régua e fagulha, e uma **prancha** por skill, lado a lado.
+3. **Skills:** título com régua e fagulha, e uma **prancha** por skill, duas por linha.
 
 Formas:
 
